@@ -16,10 +16,15 @@
             {
                 <tr>
                     <td>
-                        <img src="@product.ImageUrl" alt="product image" style="width:100px;" />
+                        <a href="/product/@product.Id">
+                            <img src="@product.ImageUrl" alt="product image" style="width:100px;" />
+                        </a>
+
                     </td>
                     <td class="align-middle">
-                        @product.Name
+                        <a href="/product/@product.Id">
+                            @product.Name
+                        </a>
                     </td>
                     <td>
                         @product.Supplier
