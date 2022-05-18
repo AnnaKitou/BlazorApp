@@ -33,6 +33,8 @@ namespace BlazorProducts.Client.HttpInterceptor
                     case HttpStatusCode.NotFound:_navManager.NavigateTo("/404");
                         message = "Resource Not Found.";
                         break;
+                    case HttpStatusCode.BadRequest: message = "Invalid Request. Please try again";
+                        break;
                     case HttpStatusCode.Unauthorized:_navManager.NavigateTo("/unauthorized");
                         message = "Unauthorized Access";
                         break;
