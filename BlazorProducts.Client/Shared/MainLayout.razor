@@ -1,4 +1,5 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
 
 <div class="page">
     <div class="sidebar">
@@ -15,6 +16,13 @@
                 @Body
           </CascadingValue>
         </div>
+
+        <Blazored.Toast.BlazoredToasts Position="ToastPosition.TopRight"
+        Timeout="10"
+        IconType="Blazored.Toast.IconType.FontAwesome"
+        SuccessIcon="oi oi-thumb-up"
+        ErrorIcon="oi oi-bug"/>
+        
     </div>
 </div>
 @code{

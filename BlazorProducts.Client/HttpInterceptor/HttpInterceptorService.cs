@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Blazored.Toast.Services;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Net;
 using Toolbelt.Blazor;
@@ -9,11 +10,13 @@ namespace BlazorProducts.Client.HttpInterceptor
     {
         private readonly HttpClientInterceptor _interceptor;
         private readonly NavigationManager _navManager;
+        private readonly IToastService _toastService;
 
-        public HttpInterceptorService(HttpClientInterceptor interceptor, NavigationManager navManager)
+        public HttpInterceptorService(HttpClientInterceptor interceptor, NavigationManager navManager, IToastService toastService)
         {
             _interceptor = interceptor;
             _navManager = navManager;
+            _toastService = toastService;
         }
         public void RegisterEvent() => _interceptor.AfterSend += HandleResponse;
         public void DisposeEvent() => _interceptor.AfterSend += HandleResponse;
@@ -37,6 +40,8 @@ namespace BlazorProducts.Client.HttpInterceptor
                         break;
                     case HttpStatusCode.Unauthorized:_navManager.NavigateTo("/unauthorized");
                         message = "Unauthorized Access";
+                        break;
+                        _toastService.ShowError(message);
                         break;
                     default:_navManager.NavigateTo("/error");
                         message = "Something went wrong. Please Contact the Administrator";
