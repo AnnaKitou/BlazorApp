@@ -2,14 +2,17 @@ using BlazorProducts.Server.Context;
 using BlazorProducts.Server.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace BlazorProducts.Server
 {
-	public class Startup
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -47,6 +50,13 @@ namespace BlazorProducts.Server
 
             app.UseHttpsRedirection();
             app.UseCors("CorsPolicy");
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),
+                @"StaticFiles")),
+                RequestPath = new PathString("/StaticFiles")
+            });
 
             app.UseRouting();
 
