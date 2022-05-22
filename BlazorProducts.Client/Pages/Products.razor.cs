@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BlazorProducts.Client.Pages
 {
-    public partial class Products:IDisposable
+    public partial class Products : IDisposable
     {
         public List<Product> ProductList { get; set; } = new List<Product>();
         public MetaData MetaData { get; set; } = new MetaData();
@@ -65,6 +65,15 @@ namespace BlazorProducts.Client.Pages
             await GetProducts();
         }
 
-        public void Dispose()=>Interceptor.DisposeEvent();
+        private async Task DeleteProduct(Guid id)
+        {
+            await ProductRepo.DeleteProduct(id);
+
+            if (_productParameters.PageNumber > 1 && ProductList.Count == 1)
+                _productParameters.PageNumber--;
+
+            await GetProducts();
+        }
+        public void Dispose() => Interceptor.DisposeEvent();
     }
 }

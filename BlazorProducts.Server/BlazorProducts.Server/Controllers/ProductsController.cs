@@ -57,5 +57,16 @@ namespace BlazorProducts.Server.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(Guid id)
+        {
+            var product = await _repo.GetProduct(id);
+            if (product == null)
+                return NotFound();
+
+            await _repo.DeleteProduct(product);
+
+            return NoContent();
+        }
     }
 }

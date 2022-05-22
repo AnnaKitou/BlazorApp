@@ -13,6 +13,6 @@ namespace BlazorProducts.Server.Repository
         Task<Product> GetProduct(Guid id);
         Task CreateProduct(Product product);
         Task UpdateProduct(Product product, Product dbProduct);
-
+        Task DeleteProduct(Product product);
     }
 }

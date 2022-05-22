@@ -30,6 +30,7 @@ namespace BlazorProducts.Client.HttpRepository
 
         public async Task CreateProduct(Product product) => await _client.PostAsJsonAsync("products", product);
 
+
         public async Task<Product> GetProduct(Guid id)
         {
             var product = await _client.GetFromJsonAsync<Product>($"products/{id}");
@@ -65,11 +66,14 @@ namespace BlazorProducts.Client.HttpRepository
         public async Task UpdateProduct(Product product) => await _client
             .PutAsJsonAsync(Path.Combine("products",
                 product.Id.ToString()), product);
+        public async Task DeleteProduct(Guid id) => await _client
+            .DeleteAsync(Path.Combine("products",
+                id.ToString()));
 
         public async Task<string> UploadProductImage(MultipartFormDataContent content)
         {
             var postResult = await _client.PostAsync("upload", content);
-            var postContent=await postResult.Content.ReadAsStringAsync();
+            var postContent = await postResult.Content.ReadAsStringAsync();
             var imgUrl = Path.Combine("https://localhost:5011/", postContent);
 
             return imgUrl;

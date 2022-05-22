@@ -52,5 +52,10 @@ namespace BlazorProducts.Server.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task DeleteProduct(Product product)
+        {
+          _context.Remove(product);
+            await _context.SaveChangesAsync();
+        }
     }
 }
