@@ -11,6 +11,8 @@ namespace BlazorProducts.Server.Repository
     {
         Task<PagedList<Product>> GetProducts(ProductParameters productParameters);
         Task<Product> GetProduct(Guid id);
-        Task CreateProduct(Product product);    
+        Task CreateProduct(Product product);
+        Task UpdateProduct(Product product, Product dbProduct);
+
     }
 }

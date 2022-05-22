@@ -62,6 +62,10 @@ namespace BlazorProducts.Client.HttpRepository
             return pagingResponse;
         }
 
+        public async Task UpdateProduct(Product product) => await _client
+            .PutAsJsonAsync(Path.Combine("products",
+                product.Id.ToString()), product);
+
         public async Task<string> UploadProductImage(MultipartFormDataContent content)
         {
             var postResult = await _client.PostAsync("upload", content);

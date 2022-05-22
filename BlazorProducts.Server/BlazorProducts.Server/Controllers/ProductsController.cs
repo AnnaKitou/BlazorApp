@@ -44,5 +44,18 @@ namespace BlazorProducts.Server.Controllers
             await _repo.CreateProduct(product);
             return CreatedAtAction(nameof(GetProduct), new {id=product.Id },product);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(Guid id,[FromBody]Product product)
+        {
+            var dbProduct = await _repo.GetProduct(id);
+            if(dbProduct==null)
+                return NotFound();
+
+            await _repo.UpdateProduct(product, dbProduct);
+
+            return NoContent();
+        }
+
     }
 }
