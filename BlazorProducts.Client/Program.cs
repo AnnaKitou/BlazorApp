@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -23,12 +24,11 @@ namespace BlazorProducts.Client
 			builder.RootComponents.Add<App>("#app");
 
 			builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-			var apiConfiguration = new ApiConfiguration();
-			builder.Configuration.Bind("ApiConfiguration",apiConfiguration);
-
+			
 			builder.Services.AddHttpClient("ProductsAPI", (sp,cl) =>
 			{
-				cl.BaseAddress = new Uri(apiConfiguration.BaseAddress+"/api/");
+				var apiConfiguration=sp.GetRequiredService<IOptions<ApiConfiguration>>();
+				cl.BaseAddress = new Uri(apiConfiguration.Value.BaseAddress+"/api/");
 				cl.EnableIntercept(sp);
 			});
 
@@ -39,6 +39,9 @@ namespace BlazorProducts.Client
 			builder.Services.AddHttpClientInterceptor();
 			builder.Services.AddScoped<IProductHttpRepository, ProductHttpRepository>();
 			builder.Services.AddScoped<HttpInterceptorService>();
+
+			builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("ApiConfiguration"));
+
 			await builder.Build().RunAsync();
 		}
 	}

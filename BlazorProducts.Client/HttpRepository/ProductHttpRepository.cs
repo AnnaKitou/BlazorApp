@@ -5,6 +5,7 @@ using Entities.RequestFeatures;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,13 +26,11 @@ namespace BlazorProducts.Client.HttpRepository
         private readonly JsonSerializerOptions _options =
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        public IConfiguration Configuration { get; }
-
-        public ProductHttpRepository(HttpClient client, NavigationManager navManager, IConfiguration configuration)
+        public ProductHttpRepository(HttpClient client, NavigationManager navManager, IOptions<ApiConfiguration> configuration)
         {
             _client = client;
             _navManager = navManager;
-            configuration.Bind("ApiConfiguration",_apiConfiguration);
+            _apiConfiguration = configuration.Value;
         }
 
         public async Task CreateProduct(Product product) => await _client.PostAsJsonAsync("products", product);
