@@ -1,6 +1,10 @@
 ﻿@page "/"
 @page "/index"
 @using BlazorProducts.Client.Components
+@inject IWebAssemblyHostEnvironment HostEnvironment
+
+<h2>Environment:@HostEnvironment.Environment</h2>
+
 <Home Title= "Welcome to the BlazorProducts.Client Application." @attributes="AdditionalAttributes" >
     <VisitShopContent>
             Feel free to
