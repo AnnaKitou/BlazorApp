@@ -1,22 +1,19 @@
-using Blazored.Toast;
 using BlazorProducts.Client.HttpInterceptor;
 using BlazorProducts.Client.HttpRepository;
 using Entities.Configuration;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
+using Blazored.Toast;
 
 namespace BlazorProducts.Client
 {
-	public class Program
+    public class Program
 	{
 		public static async Task Main(string[] args)
 		{
