@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Blazored.Toast;
+using BlazorProducts.Client.Toastr.Services;
 
 namespace BlazorProducts.Client
 {
@@ -38,6 +39,8 @@ namespace BlazorProducts.Client
 			builder.Services.AddScoped<HttpInterceptorService>();
 
 			builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("ApiConfiguration"));
+
+			builder.Services.AddBlazorToastr();
 
 			await builder.Build().RunAsync();
 		}
