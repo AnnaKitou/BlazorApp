@@ -11,6 +11,8 @@ using System.Net.Http;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using Blazored.Toast;
 using BlazorProducts.Client.Toastr.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using BlazorProducts.Client.AuthProviders;
 
 namespace BlazorProducts.Client
 {
@@ -43,6 +45,7 @@ namespace BlazorProducts.Client
 			builder.Services.AddBlazorToastr();
 
 			builder.Services.AddAuthorizationCore();
+			builder.Services.AddScoped<AuthenticationStateProvider, TestAuthStateProvider>();
 
 			await builder.Build().RunAsync();
 		}
