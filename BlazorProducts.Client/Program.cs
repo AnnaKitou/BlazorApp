@@ -42,6 +42,8 @@ namespace BlazorProducts.Client
 
 			builder.Services.AddBlazorToastr();
 
+			builder.Services.AddAuthorizationCore();
+
 			await builder.Build().RunAsync();
 		}
 	}
