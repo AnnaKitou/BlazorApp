@@ -19,8 +19,17 @@
 @code {
     private int currentCount = 0;
 
-    private void IncrementCount()
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthState { get; set; }
+
+    private async void IncrementCount()
     {
+        var authState = await AuthState;
+        var user = authState.User;
+
+        if(user.Identity.IsAuthenticated)
         currentCount++;
+        else
+          currentCount--;
     }
 }
