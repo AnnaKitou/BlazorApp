@@ -1,5 +1,15 @@
 ﻿@page "/counter"
 @using BlazorProducts.Client.Components
+@using System.Security.Claims
+
+<AuthorizeView Roles="Administrator">
+    <Authorized>
+        The user: @context.User.FindFirst(ClaimTypes.Name).Value is Authorized
+    </Authorized>
+     <NotAuthorized>
+        The user is not Authorized
+    </NotAuthorized>
+</AuthorizeView>
 <CounterPrint Title="Counter" CurrentCount="currentCount">
 
 </CounterPrint>
