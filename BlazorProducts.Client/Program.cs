@@ -47,6 +47,8 @@ namespace BlazorProducts.Client
 			builder.Services.AddAuthorizationCore();
 			builder.Services.AddScoped<AuthenticationStateProvider, TestAuthStateProvider>();
 
+			builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
+
 			await builder.Build().RunAsync();
 		}
 	}
