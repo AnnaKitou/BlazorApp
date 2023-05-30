@@ -1,8 +1,37 @@
-﻿namespace BlazorProducts.Client.Pages
+﻿using BlazorProducts.Client.HttpRepository;
+using Entities.DTO;
+using Microsoft.AspNetCore.Components;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace BlazorProducts.Client.Pages
 {
     public partial class Registration
     {
+        private UserForRegistrationDto userForRegistrationDto = new UserForRegistrationDto();
 
+        [Inject]
+        public IAuthenticationService AuthenticationService { get; set; }
 
+        public NavigationManager NavigationManager { get; set; }
+
+        public bool ShowRegistrationErrors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
+
+        public async Task Register()
+        {
+            ShowRegistrationErrors = false;
+
+            var result = await AuthenticationService.RegisterUser(userForRegistrationDto);
+            if (!result.IsSuccessfulRegistration)
+            {
+                Errors = result.Errors;
+                ShowRegistrationErrors = true;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/");
+            }
+        }
     }
 }
