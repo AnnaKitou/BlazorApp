@@ -8,7 +8,7 @@ namespace BlazorProducts.Client.Pages
 {
     public partial class Registration
     {
-        private UserForRegistrationDto userForRegistrationDto = new UserForRegistrationDto();
+        private UserForRegistrationDto _userForRegistration = new UserForRegistrationDto();
 
         [Inject]
         public IAuthenticationService AuthenticationService { get; set; }
@@ -22,7 +22,8 @@ namespace BlazorProducts.Client.Pages
         {
             ShowRegistrationErrors = false;
 
-            var result = await AuthenticationService.RegisterUser(userForRegistrationDto);
+            var result = await AuthenticationService.RegisterUser(_userForRegistration);
+
             if (!result.IsSuccessfulRegistration)
             {
                 Errors = result.Errors;
