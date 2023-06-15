@@ -13,6 +13,7 @@ using Blazored.Toast;
 using BlazorProducts.Client.Toastr.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using BlazorProducts.Client.AuthProviders;
+using Blazored.LocalStorage;
 
 namespace BlazorProducts.Client
 {
@@ -43,9 +44,10 @@ namespace BlazorProducts.Client
 			builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection("ApiConfiguration"));
 
 			builder.Services.AddBlazorToastr();
+			builder.Services.AddBlazoredLocalStorage();
 
 			builder.Services.AddAuthorizationCore();
-			builder.Services.AddScoped<AuthenticationStateProvider, TestAuthStateProvider>();
+			builder.Services.AddScoped<AuthenticationStateProvider, AuthStateProvider>();
 
 			builder.Services.AddScoped<IAuthenticationService,AuthenticationService>();
 

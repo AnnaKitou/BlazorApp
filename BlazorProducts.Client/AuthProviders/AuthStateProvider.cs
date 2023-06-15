@@ -19,6 +19,8 @@ namespace BlazorProducts.Client.AuthProviders
         {
             _httpClient = httpClient;
             _localStorage = localStorage;
+            _anonymous = new AuthenticationState(
+                new ClaimsPrincipal(new ClaimsIdentity()));
         }
 
 
@@ -36,6 +38,22 @@ namespace BlazorProducts.Client.AuthProviders
 
             return new AuthenticationState(new ClaimsPrincipal
                 (new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), "jwtAuthType")));
+        }
+
+        public void NotifyAuthentication(string email)
+        {
+            var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(
+                new[] { new Claim(ClaimTypes.Name, email) }, "jwtAuthType"));
+            var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
+
+            NotifyAuthenticationStateChanged(authState);
+        }
+
+        public void NotifyUserLogout()
+        {
+            var authState = Task.FromResult(_anonymous);
+
+            NotifyAuthenticationStateChanged(authState);
         }
     }
 }
