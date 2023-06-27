@@ -16,18 +16,18 @@ namespace BlazorProducts.Client.Pages
 		[Inject]
 		public NavigationManager NavigationManager { get; set; }
 
-		public bool ShowAuthenticationErrors { get; set; }
+		public bool ShowAuthError { get; set; }
 		public string Error { get; set; }
 
 		public async Task ExecuteLogin()
 		{
-			ShowAuthenticationErrors = false;
+			ShowAuthError = false;
 
 			var result = await AuthenticationService.Login(_userForAuthentication);
 			if (!result.IsAuthSuccessful)
 			{
 				Error = result.ErrorMessage;
-				ShowAuthenticationErrors = true;
+				ShowAuthError= true;
 			}
 			else
 			{

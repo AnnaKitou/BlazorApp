@@ -2,7 +2,7 @@
 @using BlazorProducts.Client.Components
 @using System.Security.Claims
 
-<AuthorizeView Roles="Administrator">
+<AuthorizeView>
     <Authorized>
         The user: @context.User.FindFirst(ClaimTypes.Name).Value is Authorized
     </Authorized>

@@ -15,8 +15,8 @@ namespace BlazorProducts.Client.HttpRepository
         private readonly HttpClient _client;
         private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         private readonly AuthenticationStateProvider _authStateProvider;
-        private readonly ILocalStorageService _localStorage;
-        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, ILocalStorageService localStorage)
+        private readonly Blazored.LocalStorage.ILocalStorageService _localStorage;
+        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, Blazored.LocalStorage.ILocalStorageService localStorage)
         {
             _client = client;
             _authStateProvider = authStateProvider;
