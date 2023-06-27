@@ -40,10 +40,10 @@ namespace BlazorProducts.Client.AuthProviders
                 (new ClaimsIdentity(JwtParser.ParseClaimsFromJwt(token), "jwtAuthType")));
         }
 
-        public void NotifyAuthentication(string email)
+        public void NotifyAuthentication(string token)
         {
             var authenticatedUser = new ClaimsPrincipal(new ClaimsIdentity(
-                new[] { new Claim(ClaimTypes.Name, email) }, "jwtAuthType"));
+              JwtParser.ParseClaimsFromJwt(token), "jwtAuthType"));
             var authState = Task.FromResult(new AuthenticationState(authenticatedUser));
 
             NotifyAuthenticationStateChanged(authState);

@@ -34,7 +34,7 @@ namespace BlazorProducts.Client.HttpRepository
             await _localStorage.SetItemAsync("authToken", result.Token);
 
             ((AuthStateProvider)_authStateProvider).NotifyAuthentication(
-                userForAuthentication.Email);
+                result.Token);
 
             _client.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(
