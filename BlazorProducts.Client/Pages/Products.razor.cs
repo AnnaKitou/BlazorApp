@@ -24,6 +24,7 @@ namespace BlazorProducts.Client.Pages
         protected async override Task OnInitializedAsync()
         {
             Interceptor.RegisterEvent();
+            Interceptor.RegisterBeforeSendEvent();
             await GetProducts();
 
         }
