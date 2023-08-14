@@ -105,5 +105,18 @@ namespace BlazorProducts.Client.HttpRepository
 
             return new ResponseDto { IsSuccessfulRegistration = true };
         }
-    }
+
+		public async Task<ResetPasswordResponseDto> ResetPassword(ResetPasswordDto resetPasswordDto)
+		{
+			var resetResult = await _client.PostAsJsonAsync("account/resetpassword",
+				resetPasswordDto);
+
+			var resetContent = await resetResult.Content.ReadAsStringAsync();
+
+			var result = JsonSerializer.Deserialize<ResetPasswordResponseDto>(resetContent,
+				_options);
+
+			return result;
+		}
+	}
 }

@@ -11,5 +11,6 @@ namespace BlazorProducts.Client.HttpRepository
         Task Logout();
         Task<string> RefereshToken();
         Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto);
+        Task<ResetPasswordResponseDto> ResetPassword(ResetPasswordDto resetPasswordDto);
     }
 }
