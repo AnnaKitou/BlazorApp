@@ -1,4 +1,5 @@
 ﻿using Entities.DTO;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace BlazorProducts.Client.HttpRepository
@@ -9,5 +10,6 @@ namespace BlazorProducts.Client.HttpRepository
         Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication);
         Task Logout();
         Task<string> RefereshToken();
+        Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto);
     }
 }

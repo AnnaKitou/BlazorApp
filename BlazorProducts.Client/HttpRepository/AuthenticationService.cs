@@ -1,7 +1,10 @@
 ﻿using Blazored.LocalStorage;
 using BlazorProducts.Client.AuthProviders;
 using Entities.DTO;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -16,11 +19,22 @@ namespace BlazorProducts.Client.HttpRepository
         private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         private readonly AuthenticationStateProvider _authStateProvider;
         private readonly Blazored.LocalStorage.ILocalStorageService _localStorage;
-        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, Blazored.LocalStorage.ILocalStorageService localStorage)
+        private readonly NavigationManager _navManager;
+        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, Blazored.LocalStorage.ILocalStorageService localStorage, NavigationManager navManager)
         {
             _client = client;
             _authStateProvider = authStateProvider;
             _localStorage = localStorage;
+            _navManager = navManager;
+        }
+
+        public async Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            forgotPasswordDto.ClientURI = Path.Combine(_navManager.BaseUri, "resetpassword");
+
+            var result = await _client.PostAsJsonAsync("account/forgotpassword", forgotPasswordDto);
+
+            return result.StatusCode;
         }
 
         public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
@@ -66,8 +80,8 @@ namespace BlazorProducts.Client.HttpRepository
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
 
-            await _localStorage.SetItemAsync("authtoken",result.Token);
-            await _localStorage.SetItemAsync("refreshToken",result.RefreshToken);
+            await _localStorage.SetItemAsync("authtoken", result.Token);
+            await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
                 ("bearer", result.Token);
