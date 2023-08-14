@@ -77,11 +77,13 @@ namespace BlazorProducts.Client.HttpRepository
 
         public async Task<ResponseDto> RegisterUser(UserForRegistrationDto userForRegistrationDto)
         {
-            var response = await _client.PostAsJsonAsync("account/register", userForRegistrationDto);
+            var response = await _client.PostAsJsonAsync("account/register",
+                userForRegistrationDto);
 
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
+
                 var result = JsonSerializer.Deserialize<ResponseDto>(content, _options);
 
                 return result;

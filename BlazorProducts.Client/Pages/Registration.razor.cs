@@ -23,18 +23,18 @@ namespace BlazorProducts.Client.Pages
 
 		public async Task Register()
 		{
-			ShowRegistrationErrors = false;
+            ShowRegistrationErrors = false;
 
-			var result = await AuthenticationService.RegisterUser(_userForRegistration);
-			if (!result.IsSuccessfulRegistration)
-			{
-				Errors = result.Errors;
-				ShowRegistrationErrors = true;
-			}
-			else
-			{
-				NavigationManager.NavigateTo("/");
-			}
-		}
+            var result = await AuthenticationService.RegisterUser(_userForRegistration);
+            if (!result.IsSuccessfulRegistration)
+            {
+                Errors = result.Errors;
+                ShowRegistrationErrors = true;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/");
+            }
+        }
 	}
 }
