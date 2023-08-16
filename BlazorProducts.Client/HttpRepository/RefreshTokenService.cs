@@ -25,7 +25,7 @@ namespace BlazorProducts.Client.HttpRepository
 
             var diff = expTime - DateTime.UtcNow;
             if (diff.TotalMinutes <= 2)
-                return await _authService.RefereshToken();
+                return await _authService.RefreshToken();
             
             return string.Empty;
         }

@@ -16,126 +16,157 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace BlazorProducts.Client.HttpRepository
 {
-	public class AuthenticationService : IAuthenticationService
-	{
-		private readonly HttpClient _client;
-		private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-		private readonly AuthenticationStateProvider _authStateProvider;
-		private readonly Blazored.LocalStorage.ILocalStorageService _localStorage;
-		private readonly NavigationManager _navManager;
-		public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, Blazored.LocalStorage.ILocalStorageService localStorage, NavigationManager navManager)
-		{
-			_client = client;
-			_authStateProvider = authStateProvider;
-			_localStorage = localStorage;
-			_navManager = navManager;
-		}
+    public class AuthenticationService : IAuthenticationService
+    {
+        private readonly HttpClient _client;
+        private readonly JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        private readonly AuthenticationStateProvider _authStateProvider;
+        private readonly Blazored.LocalStorage.ILocalStorageService _localStorage;
+        private readonly NavigationManager _navManager;
+        public AuthenticationService(HttpClient client, AuthenticationStateProvider authStateProvider, Blazored.LocalStorage.ILocalStorageService localStorage, NavigationManager navManager)
+        {
+            _client = client;
+            _authStateProvider = authStateProvider;
+            _localStorage = localStorage;
+            _navManager = navManager;
+        }
 
-		public async Task<HttpStatusCode> EmailConfirmation(string email, string token)
-		{
-			var queryStringParam = new Dictionary<string, string>
-			{
-				["email"] = email,
-				["token"] = token
-			};
+        public async Task<HttpStatusCode> EmailConfirmation(string email, string token)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["email"] = email,
+                ["token"] = token
+            };
 
-			var response = await _client.GetAsync(QueryHelpers.AddQueryString(
-				"account/emailconfirmation", queryStringParam));
+            var response = await _client.GetAsync(QueryHelpers.AddQueryString(
+                "account/emailconfirmation", queryStringParam));
 
-			return response.StatusCode;
-		}
+            return response.StatusCode;
+        }
 
-		public async Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
-		{
-			forgotPasswordDto.ClientURI = Path.Combine(_navManager.BaseUri, "resetpassword");
+        public async Task<HttpStatusCode> ForgotPassword(ForgotPasswordDto forgotPasswordDto)
+        {
+            forgotPasswordDto.ClientURI =
+                Path.Combine(_navManager.BaseUri, "resetpassword");
 
-			var result = await _client.PostAsJsonAsync("account/forgotpassword", forgotPasswordDto);
+            var result = await _client.PostAsJsonAsync("account/forgotpassword",
+                forgotPasswordDto);
 
-			return result.StatusCode;
-		}
+            return result.StatusCode;
+        }
 
-		public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
-		{
-			var response = await _client.PostAsJsonAsync("account/login", userForAuthentication);
-			var content = await response.Content.ReadAsStringAsync();
-			var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
-			if (!response.IsSuccessStatusCode)
-				return result;
+        public async Task<AuthResponseDto> Login(UserForAuthenticationDto userForAuthentication)
+        {
+            var response = await _client.PostAsJsonAsync("account/login",
+                userForAuthentication);
+            var content = await response.Content.ReadAsStringAsync();
 
-			await _localStorage.SetItemAsync("authToken", result.Token);
-			await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
+            var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
 
-			((AuthStateProvider)_authStateProvider).NotifyAuthentication(
-				result.Token);
+            if (!response.IsSuccessStatusCode || result.Is2StepVerificationRequired)
+                return result;
 
-			_client.DefaultRequestHeaders.Authorization =
-				new AuthenticationHeaderValue(
-					"bearer", result.Token);
+            await _localStorage.SetItemAsync("authToken", result.Token);
+            await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
 
-			return new AuthResponseDto { IsAuthSuccessful = true };
-		}
+            ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(
+                result.Token);
 
-		public async Task Logout()
-		{
-			await _localStorage.RemoveItemAsync("authToken");
-			await _localStorage.RemoveItemAsync("refreshToken");
-			((AuthStateProvider)_authStateProvider).NotifyUserLogout();
-			_client.DefaultRequestHeaders.Authorization = null;
-		}
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "bearer", result.Token);
 
-		public async Task<string> RefereshToken()
-		{
-			var token = await _localStorage.GetItemAsync<string>("authtoken");
-			var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
-			var response = await _client.PostAsJsonAsync("token/refresh",
-				new RefreshTokenDto
-				{
-					Token = token,
-					RefreshToken = refreshToken
-				});
+            return new AuthResponseDto { IsAuthSuccessful = true };
+        }
 
-			var content = await response.Content.ReadAsStringAsync();
-			var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
+        public async Task<AuthResponseDto> LoginVerification(TwoFactorVerificationDto twoFactorDto)
+        {
+            var response = await _client.PostAsJsonAsync("account/twostepverification",
+                twoFactorDto);
+            var content = await response.Content.ReadAsStringAsync();
 
-			await _localStorage.SetItemAsync("authtoken", result.Token);
-			await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
+            var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
 
-			_client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
-				("bearer", result.Token);
+            if (!response.IsSuccessStatusCode)
+                return result;
 
-			return result.Token;
-		}
+            await _localStorage.SetItemAsync("authToken", result.Token);
+            await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
 
-		public async Task<ResponseDto> RegisterUser(UserForRegistrationDto userForRegistrationDto)
-		{
-			userForRegistrationDto.ClientURI = Path.Combine(
-				_navManager.BaseUri, "emailconfirmation");
-			var response = await _client.PostAsJsonAsync("account/register",
-				userForRegistrationDto);
+            ((AuthStateProvider)_authStateProvider).NotifyUserAuthentication(
+                result.Token);
 
-			if (!response.IsSuccessStatusCode)
-			{
-				var content = await response.Content.ReadAsStringAsync();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                "bearer", result.Token);
 
-				var result = JsonSerializer.Deserialize<ResponseDto>(content, _options);
+            return new AuthResponseDto { IsAuthSuccessful = true };
+        }
 
-				return result;
-			}
+        public async Task Logout()
+        {
+            await _localStorage.RemoveItemAsync("authToken");
+            await _localStorage.RemoveItemAsync("refreshToken");
 
-			return new ResponseDto { IsSuccessfulRegistration = true };
-		}
+            ((AuthStateProvider)_authStateProvider).NotifyUserLogout();
 
-		public async Task<ResetPasswordResponseDto> ResetPassword(ResetPasswordDto resetPasswordDto)
-		{
-			var resetResult = await _client.PostAsJsonAsync("account/resetpassword",
-				resetPasswordDto);
+            _client.DefaultRequestHeaders.Authorization = null;
+        }
 
-			var resetContent = await resetResult.Content.ReadAsStringAsync();
+        public async Task<string> RefreshToken()
+        {
+            var token = await _localStorage.GetItemAsync<string>("authToken");
+            var refreshToken = await _localStorage.GetItemAsync<string>("refreshToken");
 
-			var result = JsonSerializer.Deserialize<ResetPasswordResponseDto>(resetContent,
-				_options);
+            var response = await _client.PostAsJsonAsync("token/refresh",
+                new RefreshTokenDto
+                {
+                    Token = token,
+                    RefreshToken = refreshToken
+                });
 
-			return result;
-		}
-	}
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<AuthResponseDto>(content, _options);
+
+            await _localStorage.SetItemAsync("authToken", result.Token);
+            await _localStorage.SetItemAsync("refreshToken", result.RefreshToken);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue
+                ("bearer", result.Token);
+
+            return result.Token;
+        }
+
+        public async Task<ResponseDto> RegisterUser(UserForRegistrationDto userForRegistrationDto)
+        {
+            userForRegistrationDto.ClientURI = Path.Combine(
+                _navManager.BaseUri, "emailconfirmation");
+
+            var response = await _client.PostAsJsonAsync("account/register",
+                userForRegistrationDto);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+
+                var result = JsonSerializer.Deserialize<ResponseDto>(content, _options);
+
+                return result;
+            }
+
+            return new ResponseDto { IsSuccessfulRegistration = true };
+        }
+
+        public async Task<ResetPasswordResponseDto> ResetPassword(ResetPasswordDto resetPasswordDto)
+        {
+            var resetResult = await _client.PostAsJsonAsync("account/resetpassword",
+                resetPasswordDto);
+
+            var resetContent = await resetResult.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<ResetPasswordResponseDto>(resetContent,
+                _options);
+
+            return result;
+        }
+    }
 }
